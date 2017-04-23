@@ -44,7 +44,7 @@
                ;; lein cljsbuild once min
                {:id "min"
                 :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/suhimadcat.js"
+                :compiler {:output-to "../docs/js/compiled/suhimadcat.js"
                            :main suhimadcat.core
                            :optimizations :advanced
                            :pretty-print false}}]}
