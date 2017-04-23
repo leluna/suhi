@@ -33,9 +33,12 @@ Goals:
 - petting and feeding are disabled while on cool down
 - cooldown is display by background color
 
-Extras:
+Extras/Ideas/Problems:
 
-- feature for a more detailed display of cat state
+- feature: a more detailed display of cat state
+- problem: player needs an objective after some time
+- idea: player is a game tester and plays games (other learning projects) to unlock new features
+- idea: player gains ideas (features) from games, such as crafting, gardening, statistics
 
 ## Setup
 

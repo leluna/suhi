@@ -22,8 +22,7 @@
     
   
 (defn increase-mood [current-state n]
-  (if (< (:mood current-state) 15) (update-in current-state [:mood] #(+ % n))
-    current-state))
+  (update-in current-state [:mood] #(min (+ % n) 15)))
 
 (defonce tick (js/setInterval #(swap! app-state decrease-mood 1) 2000))
 
@@ -52,11 +51,12 @@
             :text-align "center"}}
    [state-display]
    [pet-cat-button]])
-     
-    
 
-  
 
-(defn on-js-reload []
-  (r/render-component [mad-cat] 
-    (.getElementById js/document "app")))
+(defn mount-root [] 
+  (r/render [mad-cat] (.getElementById js/document "app")))
+
+(defn on-js-reload [] 
+  (mount-root))
+
+(mount-root)
