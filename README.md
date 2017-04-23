@@ -1,6 +1,7 @@
 # s.u.h.i.
 
-Clojure/ClojureScript learning projects for Mr. S, Mr. U, Ms H and Ms I. Not quite a sushi.
+Clojure/ClojureScript learning projects for Mr. S, Mr. U, Ms H and Ms I. 
+Not quite a sushi.
 
 <pre>
  ,;'''';,
