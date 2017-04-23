@@ -1,10 +1,41 @@
 # suhimadcat
 
-FIXME: Write a one-line description of your library/project.
+A kitty cat ...
 
 ## Overview
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+Goals:
+
+1. mood & petting
+
+- a cat with constantly dropping mood
+- mood can be negative and caps in both direction
+- petting increases mood for a fixed amount
+- mood is not displayed exactly but on certain levels
+
+2. hunger (fullness) & feeding
+
+- fullness feature unlocks after certain times of petting
+- a message "The cat is hungry" appears on unlock
+- fullness drops at a constant rate
+- fullness is a non negative value and caps at a certain value
+- hunger is displayed in certain levels for certain fullness values
+- feeding increases mood and fullness if fullness is not capped, drops mood otherwise
+
+3. mood modifier
+
+- mood influences rate of fullness and mood (linearly)
+- happy cat loose mood slowlier but loose fullness quicker
+- (for later: happiness should also increase other productivity rates)
+
+4. cool down for petting/feeding
+
+- petting and feeding are disabled while on cool down
+- cooldown is display by background color
+
+Extras:
+
+- feature for a more detailed display of cat state
 
 ## Setup
 

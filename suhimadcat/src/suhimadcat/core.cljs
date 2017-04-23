@@ -3,19 +3,60 @@
 
 (enable-console-print!)
 
-(def app-state (r/atom {:text ""}))
+(defonce app-state (r/atom {:mood 1
+                            :hunger 0}))
 
-(defn mutate-text [input]
-  (apply str (conj (butlast input) "mad")))
+(defn mood-label [mood]
+  (println mood)
+  (if (< mood 0) "mad" 
+    (if (> mood 8) "happy"
+      (case mood
+        (0 1) "sad"
+        (2 3) ""
+        (4 5 6) "satisfied"
+        (7 8) "purring"))))
 
-(defn kitty-cat []
+(defn decrease-mood [current-state n]
+  (if (> (:mood current-state) -10) (update-in current-state [:mood] #(- % n))
+    current-state))
+    
+  
+(defn increase-mood [current-state n]
+  (if (< (:mood current-state) 15) (update-in current-state [:mood] #(+ % n))
+    current-state))
+
+(defonce tick (js/setInterval #(swap! app-state decrease-mood 1) 2000))
+
+
+
+
+(defn pet-cat! []
+  (swap! app-state increase-mood 10))
+
+(defn pet-cat-button []
   [:div
-    "I am " (:text @app-state) " kitty cat."
-    [:div
-      [:input {:type "button"
-               :value "Pet me"
-               :on-click #(swap! app-state update-in [:text] mutate-text)}]]])
+      [:button {:type "button"
+                :on-click #(pet-cat!)} 
+       "pet"]])
+
+(defn state-display [] 
+   [:span
+    "A " (mood-label (:mood @app-state)) " kitty cat ... "])
+
+
+(defn mad-cat []
+  [:div 
+   {:style {:line-height 2
+            :font-size "xx-large"
+            :padding-top "100px"
+            :text-align "center"}}
+   [state-display]
+   [pet-cat-button]])
+     
+    
+
+  
 
 (defn on-js-reload []
-  (r/render-component [kitty-cat] 
+  (r/render-component [mad-cat] 
     (.getElementById js/document "app")))
