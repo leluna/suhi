@@ -39,6 +39,7 @@ Extras/Ideas/Problems:
 - problem: player needs an objective after some time
 - idea: player is a game tester and plays games (other learning projects) to unlock new features
 - idea: player gains ideas (features) from games, such as crafting, gardening, statistics
+- idea: if a hidden negative value of mood is reached, pet button disappears upon clicking and the following text appears "The kitty cat is so mad that it bares her claws and scratches your hands, arms and face. You die in excruciating pain..." 
 
 ## Setup
 
