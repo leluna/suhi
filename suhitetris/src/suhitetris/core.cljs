@@ -17,6 +17,11 @@
                :value "Transform me!"
                :on-click #(swap! app-state update-in [:text] mutate-text)}]]])
 
-(defn on-js-reload []
+(defn mount-root []
   (r/render-component [my-cute-dummy] 
     (.getElementById js/document "app")))
+
+(defn on-js-reload [] 
+  (mount-root))
+
+(mount-root)
