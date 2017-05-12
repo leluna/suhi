@@ -3,22 +3,42 @@
 
 (enable-console-print!)
 
-(def app-state (r/atom {:text "dumm"}))
+(def pieces {})
 
-(defn mutate-text [input]
-  (println @app-state)
-  (apply str (conj (butlast input) "mad")))
 
-(defn my-cute-dummy []
-  [:div
-    "Hi, I am cute " (:text @app-state) " kitty cat!"
-    [:div
-      [:input {:type "button"
-               :value "Transform me!"
-               :on-click #(swap! app-state update-in [:text] mutate-text)}]]])
+(def app-state (r/atom {:board [[nil nil 1 nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]
+                                [nil nil nil nil nil nil nil nil nil nil]]}))
+
+(defn board []
+  [:div.container 
+   [:div 
+    (for [line (:board @app-state)]
+      [:div.line (for [cell line]
+                   [:div.cell {:class (if cell "block" "empty")}])])]]) 
+   
 
 (defn mount-root []
-  (r/render-component [my-cute-dummy] 
+  (r/render-component [board] 
     (.getElementById js/document "app")))
 
 (defn on-js-reload [] 

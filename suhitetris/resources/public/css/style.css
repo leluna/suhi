@@ -1,2 +1,23 @@
 /* some style */
 
+.container {
+  width: 300px;
+  height: 660px;
+  margin: auto;
+  outline: #27b0d9 5px solid;
+  font-size: 0;
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+}
+
+.empty{
+  background-color: #f5f5f5;
+}
+
+.block{
+  background-color: #eb5248;
+}
