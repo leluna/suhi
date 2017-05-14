@@ -45,10 +45,13 @@
 
 ;; todo: merge to one function...
 (defn move-down [state]
-  (let [to (down (get-in state [:block :position]))]
+  (let [current-pos (get-in state [:block :position])
+        to (down current-pos)
+        [x y] current-pos]
     (if (valid-move? (:board state) to)
       (assoc-in state [:block :position] to)
-      state)))
+      (-> (assoc-in state [:block :position] [0 5])
+          (assoc-in [:board x y] 1)))))
     
 
 (defn move-left [state]
@@ -111,7 +114,7 @@
     (cond (= key-code 37) (swap! app-state move-left)
           (= key-code 38) (println "up arrow key pressed")
           (= key-code 39) (swap! app-state move-right)
-          (= key-code 40) (println "down arrow key pressed"))))
+          (= key-code 40) (swap! app-state move-down))))
 
 (.addEventListener js/document "keydown" handle-arrow-keys!)
 
