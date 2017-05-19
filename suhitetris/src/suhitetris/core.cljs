@@ -1,10 +1,16 @@
 (ns suhitetris.core
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [suhitetris.vector :as v]))
 
 (enable-console-print!)
 
-(def pieces {})
-
+(def pieces [:z #_:s :t #_:l #_:j #_:i #_:o])
+(def shapes {:t [[-1 0] [0 0] [1 0]
+                        [0 1]]
+             :z [[-1 0] [0 0]
+                        [0 1] [1 1]]})
+(defn random-piece []
+  (rand-nth pieces))
 
 (defonce app-state (r/atom {:board [[0 0 0 0 0 0 0 0 0 0]
                                     [0 0 0 0 0 0 0 0 0 0]
@@ -28,7 +34,8 @@
                                     [0 0 0 0 0 0 0 0 0 0]
                                     [0 0 0 0 0 0 0 0 0 0]
                                     [0 0 0 0 0 0 0 0 1 1]]
-                            :block {:position [5 3]}
+                            :block {:position [5 1]
+                                    :shape (shapes (random-piece))}
                             :settings {:gravity true}}))
 
 (defn valid-move? [board to]
@@ -66,15 +73,24 @@
       (assoc-in state [:block :position] to)
       state)))
 
+(defn rotate-left [state]
+  (update-in state [:block :shape] #(mapv v/rotl %)))
+
+(defn rotate-right [state]
+  (update-in state [:block :shape] #(mapv v/rotr %)))
+
 
 (defonce tick! (js/setInterval
                 #(when (get-in @app-state [:settings :gravity]) (swap! app-state move-down)) 750))
 
 
-
+#_(merge-block [[nil nil nil nil][nil nil nil nil][nil nil nil nil][nil nil nil nil]] {:position [ 2 2] :shape [[-1 0] [0 0] [1 0] [0 1]]})
 
 (defn merge-block [graveyard block]
-  (assoc-in graveyard (:position block) 2))
+  (let [pos (:position block)]
+    (->> (:shape block)
+         (map (partial v/vec+ pos))
+         (reduce #(assoc-in %1 %2 2) graveyard))))
   
 
 
@@ -107,16 +123,16 @@
 (defn on-js-reload [] 
   (mount-root))
 
-
-
 (defn handle-arrow-keys! [event]
   (let [key-code (.-keyCode event)]
-    (cond (= key-code 37) (swap! app-state move-left)
-          (= key-code 38) (println "up arrow key pressed")
-          (= key-code 39) (swap! app-state move-right)
-          (= key-code 40) (swap! app-state move-down))))
+    (case key-code
+      37 (swap! app-state move-left)
+      32 (swap! app-state rotate-left)
+      38 (swap! app-state rotate-right)
+      39 (swap! app-state move-right)
+      40 (swap! app-state move-down))))
 
-(.addEventListener js/document "keydown" handle-arrow-keys!)
+(defonce listener (.addEventListener js/document "keydown" handle-arrow-keys!))
 
 (mount-root)
 
