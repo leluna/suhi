@@ -6,6 +6,7 @@
   margin: auto;
   outline: #27b0d9 5px solid;
   font-size: 0;
+  position: relative;
 }
 
 .cell {
@@ -25,3 +26,38 @@
 .dead{
   background-color: #999;
 }
+
+.start-button {
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  height: 660px;
+  width: 300px;
+  transition: .5s ease;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: #999;
+}
+
+.start-button:hover{
+  background-color: #27b0d9;
+}
+
+.start-button.visible:active{
+  bottom: 0;
+  height: 0;
+  outline: none;
+}
+
+.start-button.invisible{
+  height: 0;
+  padding: 0;
+}
+ 
+.start-button.visible{
+  height: 660px;
+} 
