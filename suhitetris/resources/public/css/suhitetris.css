@@ -1,0 +1,95 @@
+/* some style */
+
+.container {
+  width: 300px;
+  height: 660px;
+  margin: auto;
+  outline: #27b0d9 5px solid;
+  font-size: 0;
+  position: relative;
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+}
+
+.empty{
+  background-color: #f5f5f5;
+}
+
+.alife{
+  background-color: #eb5248;
+}
+
+.dead{
+  background-color: #999;
+}
+
+.start-button {
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  height: 660px;
+  width: 300px;
+  transition: .5s ease;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: #999;
+}
+
+.start-button:hover{
+  background-color: #27b0d9;
+}
+
+.start-button.visible:active{
+  bottom: 0;
+  height: 0;
+  outline: none;
+}
+
+.start-button.invisible{
+  height: 0;
+  padding: 0;
+}
+ 
+.start-button.visible{
+  height: 660px;
+} 
+
+
+.spinner {
+  width: 80px;
+  height: 80px;
+  background-color: #999;
+  color: white;
+  padding: 5px;
+
+  margin: 100px auto;
+  -webkit-animation: sk-rotateplane 2s infinite ease-in-out;
+  animation: sk-rotateplane 2s infinite ease-in-out;
+}
+
+@-webkit-keyframes sk-rotateplane {
+  0% { -webkit-transform: perspective(120px) }
+  50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+  100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
+}
+
+@keyframes sk-rotateplane {
+  0% { 
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg) 
+  } 50% { 
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg) 
+  } 100% { 
+    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+  }
+}
