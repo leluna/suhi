@@ -29,3 +29,12 @@
 
 (rotate right [1 0])
 (vec+ [2 4] [3 5])
+
+(defn move-down [[v1 v2]]
+  [(inc v1) v2])
+
+(defn move-right [[v1 v2]]
+  [v1 (inc v2)])
+
+(defn move-left [[v1 v2]]
+  [v1 (dec v2)])
