@@ -4,11 +4,23 @@
 
 (enable-console-print!)
 
-(def pieces [:z #_:s :t #_:l #_:j #_:i #_:o])
+(def pieces [:z :s :t :l :j :i :o])
+
+;; todo: 0 0 currently has to be in 1st row
 (def shapes {:t [[0 -1] [0 0] [0 1]
                         [1 0]]
+             :s [       [0 0] [0 1]
+                 [1 -1] [1 0]]
              :z [[0 -1] [0 0]
-                        [1 0] [1 1]]})
+                        [1 0] [1 1]]
+             :l [[0 0] [0 1] [0 2] 
+                 [1 0]]
+             :j [[0 -2] [0 -1] [0 0] 
+                               [1 0]]
+             :i [[0 0] [0 1] [0 2] [0 3]]
+             :o [[0 0] [0 1]
+                 [1 0] [1 1]]})
+
 (defn random-piece []
   (rand-nth pieces))
 
@@ -132,12 +144,13 @@
       (map-indexed line-of-blocks (merge-block (:board @app-state) (:block @app-state) 2))
       [start-overlay (not (:alive @app-state)) (:score @app-state) #(swap! app-state reset)]]]
     
-   (when (:debug @app-state)
-     [:input {:type :checkbox
-              :name "Gravity"
-              :defaultChecked true
-              :on-click #(swap! app-state update-in [:settings :gravity] not)}]
-     [:div (str @app-state)])]) 
+   (when (get-in @app-state [:settings :debug])
+     [:div.debug
+      [:input {:type :checkbox
+               :name "Gravity"
+               :defaultChecked true
+               :on-click #(swap! app-state update-in [:settings :gravity] not)}]
+      [:div (str @app-state)]])]) 
 
 
 
