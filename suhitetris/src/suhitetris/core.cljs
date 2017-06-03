@@ -17,7 +17,7 @@
                  [1 0]]
              :j [[0 -2] [0 -1] [0 0] 
                                [1 0]]
-             :i [[0 0] [0 1] [0 2] [0 3]]
+             :i [[0 -1] [0 0] [0 1] [0 2]]
              :o [[0 0] [0 1]
                  [1 0] [1 1]]})
 
@@ -32,8 +32,8 @@
                                     :shape (shapes (random-piece))}
                             :alive false
                             :score 0
-                            :settings {:gravity true
-                                       :debug false}}))
+                            :settings {:gravity false
+                                       :debug true}}))
 
 (defn positions [block]
   (mapv (partial v/vec+ (:position block)) (:shape block)))
@@ -41,17 +41,19 @@
 (defn merge-block [board block val]
     (reduce #(assoc-in %1 %2 val) board (positions block)))
 
-;; todo: take state instead
-(defn valid-state? [block board]
-  (every? #(= (get-in board %) 0) block))
-
+(defn valid? [state]
+  (let [blocks (positions (get-in state [:block]))
+        board  (get-in state [:board])]
+    (every? #(= (get-in board %) 0) blocks)))
+  
+  
+  
 
 ;; todo: random rotation + choose position depending on shape
 (defn respawn [state]
   (let [next-state (-> (assoc-in state [:block :position] [0 5])
                        (assoc-in [:block :shape] (shapes (random-piece))))]
-    (if (valid-state? (positions (:block next-state)) (:board next-state))
-      next-state
+    (if (valid? next-state) next-state
       (assoc-in state [:alive] false))))
 
       
@@ -63,45 +65,29 @@
 
 ;; todo: merge to one function...
 (defn move-down [state]
-  (let [current-pos   (get-in state [:block :position])
-        current-block (positions (:block state))
-        next-block    (mapv v/move-down current-block)
-        [x y]         current-pos]
-    (if (valid-state? next-block (:board state))
-      (assoc-in state [:block :position] (v/move-down current-pos))
+  (let [next-state (update-in state [:block :position] v/move-down)]
+    (if (valid? next-state) next-state
       (-> (kill-block state)
           (respawn)))))   
 
 (defn move-left [state]
-  (let [current-pos   (get-in state [:block :position])
-        current-block (positions (:block state))
-        next-block    (mapv v/move-left current-block)]
-    (if (valid-state? next-block (:board state))
-      (assoc-in state [:block :position] (v/move-left current-pos))
+  (let [next-state (update-in state [:block :position] v/move-left)]
+    (if (valid? next-state) next-state      
       state)))
 
 (defn move-right [state]
-  (let [current-pos   (get-in state [:block :position])
-        current-block (positions (:block state))
-        next-block    (mapv v/move-right current-block)]
-    (if (valid-state? next-block (:board state))
-      (assoc-in state [:block :position] (v/move-right current-pos))
+  (let [next-state  (update-in state [:block :position] v/move-right)]
+    (if (valid? next-state) next-state
       state)))
 
 (defn rotate-left [state]
-  (let [block (:block state)
-        next-shape (mapv v/rotl (:shape block))
-        next-block (positions (assoc-in block [:shape] next-shape))]
-    (if (valid-state? next-block (:board state))
-      (update-in state [:block :shape] #(mapv v/rotl %))
+  (let [next-state (update-in state [:block :shape] #(mapv v/rotl %))]
+    (if (valid? next-state) next-state
       state)))
 
 (defn rotate-right [state]
-   (let [block (:block state)
-         next-shape (mapv v/rotr (:shape block))
-         next-block (positions (assoc-in block [:shape] next-shape))]
-    (if (valid-state? next-block (:board state))
-      (update-in state [:block :shape] #(mapv v/rotr %))
+   (let [next-state (update-in state [:block :shape] #(mapv v/rotr %))]
+    (if (valid? next-state) next-state
       state)))
 
 (defn reset [state]
