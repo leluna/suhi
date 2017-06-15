@@ -4,6 +4,10 @@
 
 (enable-console-print!)
 
+(def board-height 22)
+(def board-width 10)
+(def starting-pos [0 5])
+
 (def pieces [:z :s :t :l :j :i :o])
 
 ;; todo: 0 0 currently has to be in 1st row
@@ -24,16 +28,19 @@
 (defn random-piece []
   (rand-nth pieces))
 
+(defn empty-line []
+  (into [] (repeat board-width 0)))
+
 (defn empty-board []
-  (apply vector (repeat 22 (apply vector (repeat 10 0)))))
+  (into [] (repeat board-height (empty-line))))
 
 (defonce app-state (r/atom {:board (empty-board)
-                            :block {:position [0 5]
+                            :block {:position starting-pos
                                     :shape (shapes (random-piece))}
                             :alive false
                             :score 0
-                            :settings {:gravity false
-                                       :debug true}}))
+                            :settings {:gravity true
+                                       :debug false}}))
 
 (defn positions [block]
   (mapv (partial v/vec+ (:position block)) (:shape block)))
@@ -51,12 +58,22 @@
 
 ;; todo: random rotation + choose position depending on shape
 (defn respawn [state]
-  (let [next-state (-> (assoc-in state [:block :position] [0 5])
+  (let [next-state (-> (assoc-in state [:block :position] starting-pos)
                        (assoc-in [:block :shape] (shapes (random-piece))))]
     (if (valid? next-state) next-state
       (assoc-in state [:alive] false))))
 
-      
+
+
+(defn fill-empty-blocks [board]
+  (-> (- board-height (count board))
+      (repeat (empty-line))
+      (concat board)))
+
+(defn clear-full-lines [board]
+  (->> (remove (partial = (repeat board-width 1)) board)
+       (fill-empty-blocks)
+       (into [])))
 
 (defn kill-block [state]
   (update-in state [:board] #(merge-block % (:block state) 1)))
@@ -68,6 +85,7 @@
   (let [next-state (update-in state [:block :position] v/move-down)]
     (if (valid? next-state) next-state
       (-> (kill-block state)
+          (update-in [:board] clear-full-lines)
           (respawn)))))   
 
 (defn move-left [state]
@@ -97,6 +115,8 @@
 
 
 
+
+
 (defonce drop! (js/setInterval
                  #(when 
                     (and (:alive @app-state) 
@@ -104,6 +124,8 @@
                     (swap! app-state move-down)
                     (swap! app-state update-in [:score] inc)) 
                  100))  
+
+
 
 
 
@@ -137,6 +159,8 @@
                :defaultChecked true
                :on-click #(swap! app-state update-in [:settings :gravity] not)}]
       [:div (str @app-state)]])]) 
+
+
 
 
 
