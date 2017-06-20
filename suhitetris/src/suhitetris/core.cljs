@@ -4,9 +4,10 @@
 
 (enable-console-print!)
 
-(def board-height 22)
+(def board-height 20)
 (def board-width 10)
 (def starting-pos [0 5])
+(def initial-speed 900)
 
 (def pieces [:z :s :t :l :j :i :o])
 
@@ -17,10 +18,10 @@
                  [1 -1] [1 0]]
              :z [[0 -1] [0 0]
                         [1 0] [1 1]]
-             :l [[0 0] [0 1] [0 2] 
-                 [1 0]]
-             :j [[0 -2] [0 -1] [0 0] 
-                               [1 0]]
+             :l [[0 -1] [0 0] [0 1] 
+                 [1 -1]]
+             :j [[0 -1] [0 0] [0 1] 
+                              [1 1]]
              :i [[0 -1] [0 0] [0 1] [0 2]]
              :o [[0 0] [0 1]
                  [1 0] [1 1]]})
@@ -38,9 +39,10 @@
                             :block {:position starting-pos
                                     :shape (shapes (random-piece))}
                             :alive false
+                            :line-clears 0
                             :score 0
                             :settings {:gravity true
-                                       :debug false}}))
+                                       :debug true}}))
 
 (defn positions [block]
   (mapv (partial v/vec+ (:position block)) (:shape block)))
@@ -53,7 +55,8 @@
         board  (get-in state [:board])]
     (every? #(= (get-in board %) 0) blocks)))
   
-  
+(defn level [line-clears]
+  (min 30 (int (/ line-clears 5))))
   
 
 ;; todo: random rotation + choose position depending on shape
@@ -64,16 +67,31 @@
       (assoc-in state [:alive] false))))
 
 
+(defn line-clears-in [board]
+  (- board-height (count board)))
 
 (defn fill-empty-blocks [board]
-  (-> (- board-height (count board))
-      (repeat (empty-line))
-      (concat board)))
+  (into [] (-> (repeat (line-clears-in board) (empty-line))
+               (concat (apply list board)))))
 
-(defn clear-full-lines [board]
-  (->> (remove (partial = (repeat board-width 1)) board)
-       (fill-empty-blocks)
-       (into [])))
+(defn score-for [lines level]
+  (condp = lines
+    0 0
+    1 (* 40 (+ level 1))
+    2 (* 100 (+ level 1))
+    3 (* 300 (+ level 1))
+    4 (* 1200 (+ level 1))))
+
+(defn update-score [state]
+  (let [board       (get-in state [:board])
+        line-clears (line-clears-in board)
+        level       (level line-clears)]
+    (-> (update-in state [:score] #(+ % (score-for line-clears level)))
+        (update-in [:line-clears] (partial + line-clears)))))
+
+(defn remove-full-lines [board]
+  (into [] (remove (partial = (repeat board-width 1)) board)))
+  
 
 (defn kill-block [state]
   (update-in state [:board] #(merge-block % (:block state) 1)))
@@ -85,7 +103,9 @@
   (let [next-state (update-in state [:block :position] v/move-down)]
     (if (valid? next-state) next-state
       (-> (kill-block state)
-          (update-in [:board] clear-full-lines)
+          (update-in [:board] remove-full-lines)
+          (update-score)
+          (update-in [:board] fill-empty-blocks)
           (respawn)))))   
 
 (defn move-left [state]
@@ -121,9 +141,8 @@
                  #(when 
                     (and (:alive @app-state) 
                          (get-in @app-state [:settings :gravity])) 
-                    (swap! app-state move-down)
-                    (swap! app-state update-in [:score] inc)) 
-                 100))  
+                    (swap! app-state move-down)) 
+                 (- initial-speed (* (:level @app-state) 10))))  
 
 
 
@@ -133,7 +152,7 @@
   [:div
     [:input {:type :button
              :class (clojure.string/join " " (vector "start-button" (if visible "visible" "invisible")))
-             :value (str "defying gravity for " score " ticks")
+             :value (str "Yeah! You died with " score " points")
              :on-click resetfn}]])
   
 
