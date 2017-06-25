@@ -42,7 +42,7 @@
                             :line-clears 0
                             :score 0
                             :settings {:gravity true
-                                       :debug true}}))
+                                       :debug false}}))
 
 (defn positions [block]
   (mapv (partial v/vec+ (:position block)) (:shape block)))
@@ -148,28 +148,37 @@
 
 
 
-(defn start-overlay [visible score resetfn]
+(defn start-overlay [visible resetfn]
   [:div
     [:input {:type :button
              :class (clojure.string/join " " (vector "start-button" (if visible "visible" "invisible")))
-             :value (str "Yeah! You died with " score " points")
+             :value (str "Yeah you are dead! Reborn?")
              :on-click resetfn}]])
   
 
+(defn level-display [level]
+  [:div.line {:class "board-display"} "level? " level "!"])
+   
+
+(defn score-display [score]
+  [:div.line {:class "board-display"} "score? " score "!"])
+
 (defn line-of-blocks [index values]
-  ^{:key index}[:div.line]
-    (map-indexed (fn [i v]
-                   ^{:key i}[:div.cell (cond (= v 1) {:class "dead"}                                          
-                                             (= v 2) {:class "alife"}
-                                             :else   {:class "empty"})])
-      values))
+  ^{:key index}[:div.line
+                (map-indexed (fn [i v]
+                               ^{:key i}[:div.cell (cond (= v 1) {:class "dead"}                                          
+                                                         (= v 2) {:class "alive"}
+                                                         :else   {:class "empty"})])
+                  values)])
 
 (defn board []
   [:div.game
    [:div.container 
      [:div.board
       (map-indexed line-of-blocks (merge-block (:board @app-state) (:block @app-state) 2))
-      [start-overlay (not (:alive @app-state)) (:score @app-state) #(swap! app-state reset)]]]
+      [score-display (:score @app-state)]
+      [level-display (level (:line-clears @app-state))]
+      [start-overlay (not (:alive @app-state)) #(swap! app-state reset)]]]
     
    (when (get-in @app-state [:settings :debug])
      [:div.debug
