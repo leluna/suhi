@@ -152,7 +152,7 @@
   [:div
     [:input {:type :button
              :class (clojure.string/join " " (vector "start-button" (if visible "visible" "invisible")))
-             :value (str "Yeah you are dead! Reborn?")
+             :value (str "Yeah you are dead! Revive?")
              :on-click resetfn}]])
   
 
@@ -171,15 +171,15 @@
                                                          :else   {:class "empty"})])
                   values)])
 
-(defn board []
+(defn tetris []  
   [:div.game
-   [:div.container 
+    [:div.container 
      [:div.board
       (map-indexed line-of-blocks (merge-block (:board @app-state) (:block @app-state) 2))
       [score-display (:score @app-state)]
       [level-display (level (:line-clears @app-state))]
       [start-overlay (not (:alive @app-state)) #(swap! app-state reset)]]]
-    
+                           
    (when (get-in @app-state [:settings :debug])
      [:div.debug
       [:input {:type :checkbox
@@ -192,12 +192,12 @@
 
 
 
-(defn mount-root []
-  (r/render-component [board] 
-    (.getElementById js/document "app")))
+(defn ^:export mount-tetris [element-id]
+  (r/render-component [tetris] 
+    (.getElementById js/document element-id)))
 
 (defn on-js-reload [] 
-  (mount-root))
+  (mount-tetris "app"))
 
 (defn handle-arrow-keys! [event]
   (let [key-code (.-keyCode event)]
@@ -212,5 +212,5 @@
 
 (defonce listener (.addEventListener js/document "keydown" handle-arrow-keys!))
 
-(mount-root)
+(mount-tetris "app")
 

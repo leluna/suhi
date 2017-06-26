@@ -1,30 +1,48 @@
 /* some style */
 
+body{
+  background: #ddd;
+}
+
 .container {
   width: 300px;
   height: 660px;
   margin: auto;
-  outline: #27b0d9 5px solid;
   font-size: 0;
   position: relative;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.line{
+  height: 30px;
 }
 
 .cell {
   width: 30px;
-  height: 30px;
+  height: 100%;
   display: inline-block;
+}
+
+.board-display{
+  background-color: #27b0d9;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  font-family: sans-serif;
+  line-height: 30px;
 }
 
 .empty{
   background-color: #f5f5f5;
 }
 
-.alife{
-  background-color: #eb5248;
+.alive{
+  background-color: #ffbe27;
 }
 
 .dead{
-  background-color: #999;
+  background-color: #bfbcb5;
 }
 
 .start-button {
@@ -34,17 +52,17 @@
   font-weight: 800;
   text-align: center;
   text-decoration: none;
-  height: 660px;
+  height: 600px;
   width: 300px;
   transition: .5s ease;
   position: absolute;
   left: 0;
   top: 0;
-  background-color: #999;
+  background-color: #27b0d9;
 }
 
 .start-button:hover{
-  background-color: #27b0d9;
+  background-color: #ffbe27;
 }
 
 .start-button.visible:active{
@@ -59,7 +77,7 @@
 }
  
 .start-button.visible{
-  height: 660px;
+  height: 600px;
 } 
 
 
