@@ -65,16 +65,26 @@
     4 (* 1200 (+ level 1))))
 
 
+(defn initial-state
+  ([] {:board (empty-board)
+                      :block {:position starting-pos
+                              :shape (shapes (random-piece))}
+                      :alive false
+                      :line-clears 0
+                      :score 0
+                      :settings {:gravity true
+                                 :debug false}})
+  ([prev-state] {:board (empty-board)
+                      :block {:position starting-pos
+                              :shape (shapes (random-piece))}
+                 :alive true
+                 :line-clears 0
+                 :score 0
+                 :settings {:gravity (get-in prev-state [:settings :gravity])
+                            :debug false}}))
 
 ;; app state
-(defonce app-state (r/atom {:board (empty-board)
-                            :block {:position starting-pos
-                                    :shape (shapes (random-piece))}
-                            :alive false
-                            :line-clears 0
-                            :score 0
-                            :settings {:gravity true
-                                       :debug false}}))
+(defonce app-state (r/atom (initial-state)))
 
 
 
@@ -218,7 +228,7 @@
       (map-indexed line-of-blocks (merge-block (:board @app-state) (:block @app-state) 2))
       [score-display (:score @app-state)]
       [level-display (level @app-state)]
-      [start-overlay (not (:alive @app-state)) #(swap! app-state reset)]]]
+      [start-overlay (not (:alive @app-state)) #(reset! app-state (initial-state))]]]
                            
    (when (get-in @app-state [:settings :debug])
      [:div.debug
