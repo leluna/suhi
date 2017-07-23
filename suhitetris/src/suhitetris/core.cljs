@@ -1,6 +1,7 @@
 (ns suhitetris.core
   (:require [reagent.core :as r]
-            [suhitetris.vector :as v]))
+            [suhitetris.vector :as v]
+            [suhitetris.keycode :as keycode]))
 
 (enable-console-print!)
 
@@ -157,14 +158,18 @@
       state)))
 
 (defn rotate-left [state]
-  (let [next-state (update-in state [:block :shape] #(mapv v/rotl %))]
-    (if (valid? next-state) next-state
-      state)))
+  (if-not (= (get-in state [:block :shape]) (shapes :o))
+    (let [next-state (update-in state [:block :shape] #(mapv v/rotl %))]
+      (if (valid? next-state) next-state
+        state))
+    state))
 
 (defn rotate-right [state]
-   (let [next-state (update-in state [:block :shape] #(mapv v/rotr %))]
-    (if (valid? next-state) next-state
-      state)))
+  (if-not (= (get-in state [:block :shape]) (shapes :o))
+    (let [next-state (update-in state [:block :shape] #(mapv v/rotr %))]
+      (if (valid? next-state) next-state
+        state))
+    state))
 
 (defn reset [state]
   (-> (assoc-in state [:board] (empty-board))
@@ -187,6 +192,26 @@
 
 
 ;; ui
+
+(defn state-display []
+  [:div.state
+    [:div.state-element
+      [:label {:for "gravity" :class "debug-label"} 
+               "Gravity "]
+      [:input {:type :checkbox
+               :name "gravity"
+               :id   "gravity"
+               :defaultChecked (get-in @app-state [:settings :gravity])
+               :on-click #(swap! app-state update-in [:settings :gravity] not)}]]
+    [:div.state-element
+      [:p.debug-label "State:"]
+      [:a (str @app-state)]]
+    [:div.state-element
+      [:span.debug-label "Level: "]
+      [:a (level @app-state)]]
+    [:div.state-element
+      [:span.debug-label "Speed: "]
+      [:a (speed @app-state)]]])
 
 (defn start-overlay [visible resetfn]
   [:div
@@ -211,6 +236,7 @@
                                                          :else   {:class "empty"})])
                   values)])
 
+
 (defn tetris []  
   [:div.game
     [:div.container 
@@ -219,16 +245,16 @@
       [score-display (:score @app-state)]
       [level-display (level @app-state)]
       [start-overlay (not (:alive @app-state)) #(swap! app-state reset)]]]
-                           
-   (when (get-in @app-state [:settings :debug])
-     [:div.debug
-      [:input {:type :checkbox
-               :name "Gravity"
-               :defaultChecked true
-               :on-click #(swap! app-state update-in [:settings :gravity] not)}]
-      [:div (str @app-state)]
-      [:div "level: " (level @app-state)]
-      [:div "speed: " (speed @app-state)]])]) 
+    [:div.debug
+      [:div.debug-caption 
+        [:label {:for "debug"} "show state "]
+        [:input {:type :checkbox
+                 :name "debug"
+                 :id   "debug"
+                 :defaultChecked (get-in @app-state [:settings :debug])
+                 :on-click #(swap! app-state update-in [:settings :debug] not)}]]
+      (when (get-in @app-state [:settings :debug])
+        [state-display])]]) 
 
 
 
@@ -242,15 +268,15 @@
   (mount-tetris "app"))
 
 (defn handle-arrow-keys! [event]
-  (let [key-code (.-keyCode event)]
-    (when (:alive @app-state)
-      (case key-code
-        37 (swap! app-state move-left)
-        32 (swap! app-state rotate-left)
-        38 (swap! app-state rotate-right)
-        39 (swap! app-state move-right)
-        40 (swap! app-state move-down)
-        :default))))
+  (when (:alive @app-state)
+    (condp = (.-keyCode event)
+      (keycode/of :left)  (swap! app-state move-left)
+      (keycode/of :right) (swap! app-state move-right)
+      (keycode/of :up)    (swap! app-state rotate-right)
+      (keycode/of :down)  (swap! app-state move-down)
+      (keycode/of :space) (do (.preventDefault event)
+                              (swap! app-state rotate-left))
+      :default)))
 
 (defonce listener (.addEventListener js/document "keydown" handle-arrow-keys!))
 
