@@ -1,6 +1,6 @@
 # s.u.h.i.
 
-Clojure/ClojureScript learning projects for Mr. S, Mr. U, Ms H and Ms I. 
+Learning projects for Mr. S, Mr. U, Ms H and Ms I. 
 Not quite a sushi.
 
 <pre>
@@ -12,3 +12,12 @@ Not quite a sushi.
  
  
 -->[https://leluna.github.io/suhi/](https://leluna.github.io/suhi/)
+
+Learning stuffs like
+
+* clojure/clojurescript
+* reagent
+* leinigen
+* figwheel
+* css
+* shell script

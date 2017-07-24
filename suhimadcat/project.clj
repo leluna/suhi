@@ -1,6 +1,6 @@
 (defproject suhimadcat "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
+  :description "a useless mad cat"
+  :url "https://leluna.github.io/suhi/suhimadcat/"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
@@ -44,7 +44,7 @@
                ;; lein cljsbuild once min
                {:id "min"
                 :source-paths ["src"]
-                :compiler {:output-to "../docs/js/compiled/suhimadcat.js"
+                :compiler {:output-to "../docs/suhimadcat/js/compiled/suhimadcat.js"
                            :main suhimadcat.core
                            :optimizations :advanced
                            :pretty-print false}}]}

@@ -1,6 +1,6 @@
 (defproject suhitetris "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
+  :description "yet another tetris"
+  :url "https://leluna.github.io/suhi/suhitetris/"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
@@ -44,7 +44,7 @@
                ;; lein cljsbuild once min
                {:id "min"
                 :source-paths ["src"]
-                :compiler {:output-to "../docs/js/compiled/suhitetris.js"
+                :compiler {:output-to "../docs/suhitetris/js/compiled/suhitetris.js"
                            :main suhitetris.core
                            :optimizations :advanced
                            :pretty-print false}}]}
