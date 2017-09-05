@@ -1,12 +1,19 @@
 # suhitetris
 
+A clojurescript implementation of tetris with weird features.
+
+Learning project to get started with:
+
+ * clojure/clojurescript
+ * [reagent][]
+ * [leiningen][]
+ * [figwheel][]
+
 Attempt to try  http://timothypratley.blogspot.de/2015/07/you-should-be-using-figwheelreagent.html
 
-## Overview
-
-Reagent project with figwheel
-
-Goals: to be defined
+[reagent]: https://reagent-project.github.io/
+[leiningen]: https://github.com/technomancy/leiningen
+[figwheel]: https://github.com/bhauman/lein-figwheel
 
 ## Setup
 
