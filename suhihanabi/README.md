@@ -24,6 +24,8 @@ and to improve noob skills in:
  * 8 hints
  * 3 storms
  * 4 players 
+ 
+A hint consists of player, positions, color/number (visible)
 
 Global state consists of:
 
@@ -33,8 +35,7 @@ Global state consists of:
  * Number of storms (< 3) (visible)
  * Number of hints (<= 8) (visible)
  * 4 cards per player (visible to all but the owner of the card)
- * A hint (?) consisting of player, positions, color/number (visible)
-
+ 
 ### Start of game
 
 1. All cards are shuffled
