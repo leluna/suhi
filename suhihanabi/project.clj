@@ -5,7 +5,8 @@
   :dependencies [[org.clojure/clojure "1.9.0-beta1"]
                  [compojure "1.6.0"]
                  [ring/ring-defaults "0.3.1"]
-                 [ring/ring-jetty-adapter "1.6.2"]]
+                 [ring/ring-jetty-adapter "1.6.2"]
+                 [proto-repl "0.3.1"]]
   :plugins [[lein-ring "0.12.1"]]
   :ring {:handler suhihanabi.handler/app}
   :profiles
