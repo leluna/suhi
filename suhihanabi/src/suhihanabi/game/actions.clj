@@ -1,47 +1,31 @@
-(ns suhihanabi.game
-  (:require [suhihanabi.shorthands :refer :all]))
+(ns suhihanabi.game.actions
+  (:require [suhihanabi.game.setup :as setup]
+            [suhihanabi.shorthands :refer :all]))
 
-(def colors #{:red
-              :green
-              :blue
-              :yellow
-              :white})
-
-(def numbers [1 1 1
-              2 2
-              3 3
-              4 4
-              5])
-
-(defn new-deck [] (shuffle (for [color colors
-                                 number numbers]
+(defn new-deck [] (shuffle (for [color setup/colors
+                                 number setup/numbers]
                              {:color color
                               :number number})))
 
+(defn new-game [] {:deck (new-deck)
+                   :players {0 []
+                             1 []
+                             2 []
+                             3 []}
+                   :current-player 0
+                   :hints setup/initial-hints
+                   :trash []
+                   :storms 0
+                   :table (->> setup/colors
+                               (map #(vector % 0))
+                               (into {}))})
 
-(def initial-state {:deck (new-deck)
-                    :players {0 []
-                              1 []
-                              2 []
-                              3 []}
-                    :current-player 0
-                    :hints 8
-                    :trash []
-                    :storms 0
-                    :table (->> colors
-                                (map #(vector % 0))
-                                (into {}))})
-
-(defn valid-state? [state]
-  (and (every? #(<= (count %) 4) (:players state))
-       (>= (:hints state) 0)
-       (< (:storms state) 3)
-       (>= (count (:deck state)) 0)))
-
-
-
-(defonce game-state (atom initial-state))
-
+(defn valid-move? [state-after]
+  (and (every? #(<= (count %) 4) (:players state-after))
+       (>= (:hints state-after) 0)
+       (< (:storms state-after) 3)
+       (>= (count (:deck state-after)) 0)
+       (= (+ (count (:deck state-after))))))
 
 (defn current-hand [state]
   (get-in state [:players (:current-player state)]))
@@ -64,13 +48,13 @@
               (update-in [:deck] (partial drop 1))))
       state))
 
-(defn end-turn [state]
+(defn next-player [state]
   (update-in state [:current-player] #(mod (inc %) 4)))
 
 
 (defn deal-current-player [state]
   (-> (first (filter #(= (count (current-hand %)) 4) (iterate draw state)))
-      (end-turn)))
+      (next-player)))
 
 (defn deal [state]
   (applytimes 4 deal-current-player state))

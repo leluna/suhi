@@ -1,6 +1,6 @@
-(ns suhihanabi.game-test
+(ns suhihanabi.actions-test
   (:require [clojure.test :refer :all]
-            [suhihanabi.game :refer :all]
+            [suhihanabi.game.actions :refer :all]
             [suhihanabi.shorthands :refer :all]))
 
 (def test-hand [{:color :green
@@ -29,32 +29,32 @@
 
 (deftest t-draw
   (testing "hand of current player is not full"
-    (let [result (draw initial-state)
+    (let [result (draw (new-game))
           player (:current-player result)
           new-hand (get-in result [:players player])]
       (is (= (count new-hand) 1))
       (is (= (count (:deck result)) 49))))
   (testing "hand of current player is full"
-    (let [result (nth (iterate draw initial-state) 4)
+    (let [result (nth (iterate draw (new-game)) 4)
           player (:current-player result)
           new-hand (get-in result [:players player])]
       (is (= (count new-hand) 4))
       (is (= (count (:deck result)) 46)))))
 
 
-(deftest t-end-turn
+(deftest t-next-player
   (testing "not last player"
-    (let [state (assoc-in initial-state [:current-player] 0)
-          result (end-turn state)]
+    (let [state  (assoc-in (new-game) [:current-player] 0)
+          result (next-player state)]
       (is (= (:current-player result) 1))))
   (testing "last player"
-    (let [state (assoc-in initial-state [:current-player] 3)
-          result (end-turn state)]
+    (let [state (assoc-in (new-game) [:current-player] 3)
+          result (next-player state)]
       (is (= (:current-player result) 0)))))
 
 
 (deftest t-deal
-  (let [state initial-state
+  (let [state (new-game)
         start-player (:current-player state)
         result (deal state)
         ndeck (count (:deck state))]
@@ -66,9 +66,9 @@
       (is (= start-player (:current-player result))))))
 
 
-_#(deftest t-play
-    (let [state (deal initial-state)
+#_(deftest t-play
+    (let [state (deal (new-game))
           initial-hand (get-in state [:players (:current-player state)])]
-        (testing "valid play")
-        (let [result (play 0 state)]
-          (is (= (get-in result [:table :green]) 1)))))
+      (testing "valid play")
+      (let [result (play 0 state)]
+        (is (= (get-in result [:table :green]) 1)))))
