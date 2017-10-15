@@ -17,15 +17,24 @@
                    :trash []
                    :storms 0
                    :table (->> setup/colors
-                               (map #(vector % 0))
-                               (into {}))})
+                               (map #(vector % []))
+                               (into {}))
+                   :last-round 0})
 
-(defn valid-move? [state-after]
-  (and (every? #(<= (count %) 4) (:players state-after))
-       (>= (:hints state-after) 0)
-       (< (:storms state-after) 3)
-       (>= (count (:deck state-after)) 0)
-       (= (+ (count (:deck state-after))))))
+(defn color-matches? [[color cards]]
+  (every? #(= color (:color %)) cards))
+
+(defn valid-move? [state]
+  (and (every? #(<= (count %) 4) (:players state))
+       (>= (:hints state) 0)
+       (< (:storms state) 3)
+       (every? some? (vals (:players state)))
+       (= (+ (count (:deck state))
+             (count-vec-vals (:players state))
+             (count-vec-vals (:table state))
+             (count (:trash state)))
+          50)
+       (every? color-matches? (:table state))))
 
 (defn current-hand [state]
   (get-in state [:players (:current-player state)]))
@@ -35,18 +44,16 @@
   (keep-indexed #(when (not= %1 card-idx) %2) hand))
 
 
-(defn can-draw? [state]
+#_(defn can-draw? [state]
     (and (seq (:deck state))
          (every? #(<= (count %) 4) (:players state))))
 
 (defn draw [state]
-  (if (can-draw? state)
-      (let [deck (:deck state)
-            player (:current-player state)]
-          (-> state
-              (update-in [:players player] #(conj % (first deck)))
-              (update-in [:deck] (partial drop 1))))
-      state))
+  (let [deck (:deck state)
+        player (:current-player state)]
+      (-> state
+          (update-in [:players player] #(conj % (first deck)))
+          (update-in [:deck] (partial drop 1)))))
 
 (defn next-player [state]
   (update-in state [:current-player] #(mod (inc %) 4)))
@@ -68,11 +75,10 @@
   (let [player (:current-player state)
         hand (get-in state [:players player])
         {:keys [number color] :as card} (nth hand card-idx)]
-    (if (can-play? card (:table state))
-        (-> (update-in state [:table color] inc)
-            (assoc-in [:players player] (remove-card card-idx hand))
-            (draw))
-        state)))
+      (-> (update-in state [:table color] #(conj % card))
+          (assoc-in [:players player] (remove-card card-idx hand))
+          (draw)
+          (next-player))))
 
 
 (defn discard [player index])
