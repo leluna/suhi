@@ -66,7 +66,7 @@
       (is (= start-player (:current-player result))))))
 
 
-#_(deftest t-play
+#_(deftest t-place
     (let [state (deal (new-game))
           initial-hand (get-in state [:players (:current-player state)])]
       (testing "valid play")

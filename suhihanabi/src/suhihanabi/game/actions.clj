@@ -28,13 +28,17 @@
   (and (every? #(<= (count %) 4) (:players state))
        (>= (:hints state) 0)
        (< (:storms state) 3)
+       (every? color-matches? (:table state))))
+
+(defn valid-state? [state]
+  (and (every? #(<= (count %) 4) (:players state))
        (every? some? (vals (:players state)))
        (= (+ (count (:deck state))
              (count-vec-vals (:players state))
              (count-vec-vals (:table state))
              (count (:trash state)))
           50)
-       (every? color-matches? (:table state))))
+       (when (> (:last-round state) 0) (= (count (:deck state)) 0))))
 
 (defn current-hand [state]
   (get-in state [:players (:current-player state)]))
@@ -43,20 +47,20 @@
 (defn remove-card [card-idx hand]
   (keep-indexed #(when (not= %1 card-idx) %2) hand))
 
-
-#_(defn can-draw? [state]
-    (and (seq (:deck state))
-         (every? #(<= (count %) 4) (:players state))))
-
 (defn draw [state]
   (let [deck (:deck state)
         player (:current-player state)]
-      (-> state
-          (update-in [:players player] #(conj % (first deck)))
-          (update-in [:deck] (partial drop 1)))))
+      (if (> (count deck)  0)
+        (-> state
+            (update-in [:players player] #(conj % (first deck)))
+            (update-in [:deck] (partial drop 1)))
+        (update-in state [:last-round] inc))))
 
 (defn next-player [state]
   (update-in state [:current-player] #(mod (inc %) 4)))
+
+
+
 
 
 (defn deal-current-player [state]
@@ -68,10 +72,9 @@
 
 
 
-(defn can-play? [card table]
-  (= (:number card) (+ 1 ((:color card) table))))
 
-(defn play [card-idx state]
+
+(defn place [card-idx state]
   (let [player (:current-player state)
         hand (get-in state [:players player])
         {:keys [number color] :as card} (nth hand card-idx)]

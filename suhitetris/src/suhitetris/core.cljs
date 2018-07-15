@@ -182,12 +182,13 @@
         state))
     state))
 
-(defn reset [state]
-  (-> (assoc-in state [:board] (empty-board))
-      (assoc-in [:alive] true)
-      (assoc-in [:line-clears] 0)
-      (assoc-in [:score] 0)))
-
+(defn revive [state]
+  (if-not (:alive state)
+    (-> (assoc-in state [:board] (empty-board))
+        (assoc-in [:alive] true)
+        (assoc-in [:line-clears] 0)
+        (assoc-in [:score] 0))
+    state))
 
 
 ;; ticker
@@ -230,8 +231,10 @@
   [:div
     [:input {:type :button
              :class (clojure.string/join " " (vector "start-button" (if visible "visible" "invisible")))
-             :value (str "Yeah you are dead! Revive?")
-             :on-click resetfn}]])
+             :value (str "Yeah you are dead.\nTry in another life?")
+             :on-click #(if-not (:alive app-state)
+                                (do (apply resetfn)
+                                    (.blur (.-activeElement js/document))))}]])
 
 
 (defn level-display [level]
@@ -257,7 +260,7 @@
       (map-indexed line-of-blocks (merge-block (:board @app-state) (:block @app-state) 2))
       [score-display (:score @app-state)]
       [level-display (level @app-state)]
-      [start-overlay (not (:alive @app-state)) #(swap! app-state reset)]]]
+      [start-overlay (not (:alive @app-state)) #(swap! app-state revive)]]]
     [:div.debug
       [:div.debug-caption
         [:label {:for "debug"} "show state "]
