@@ -1,5 +1,3 @@
-/* some style */
-
 body{
   background: #ddd;
 }
@@ -55,10 +53,13 @@ body{
   height: 600px;
   width: 300px;
   transition: .5s ease;
+  transform-origin: top;
   position: absolute;
   left: 0;
   top: 0;
   background-color: #27b0d9;
+  white-space: pre;
+  line-height: 2;
 }
 
 .start-button:hover{
@@ -71,12 +72,11 @@ body{
 
 .start-button.visible:active{
   bottom: 0;
-  height: 0;
   outline: none;
 }
 
 .start-button.invisible{
-  height: 0;
+  transform: scaleY(0);
   padding: 0;
 }
 

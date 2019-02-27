@@ -229,12 +229,11 @@
 
 (defn start-overlay [visible resetfn]
   [:div
-    [:input {:type :button
-             :class (clojure.string/join " " (vector "start-button" (if visible "visible" "invisible")))
-             :value (str "Congratulation! You are dead.\nSee you in the after life?")
-             :on-click #(if-not (:alive app-state)
-                                (do (apply resetfn)
-                                    (.blur (.-activeElement js/document))))}]])
+    [:button {:class (clojure.string/join " " (vector "start-button" (if visible "visible" "invisible")))
+              :on-click #(if-not (:alive app-state)
+                                 (do (apply resetfn)
+                                     (.blur (.-activeElement js/document))))}
+             "Congratulations! You are dead.\nSee you in the after life?"]])
 
 
 (defn level-display [level]
